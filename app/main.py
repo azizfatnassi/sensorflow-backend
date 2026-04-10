@@ -2,8 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-
-
+from app.api.routes import auth 
+from app.api.routes import devices
+from app.api.routes import alerts
 app = FastAPI(
     title="SensorFlow API",
 
@@ -20,6 +21,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router)
+app.include_router(devices.router)
+app.include_router(alerts.router)
 @app.get("/")
 def root():
     return {"message": "SensorFlow API is running", "version": "1.0.0"}

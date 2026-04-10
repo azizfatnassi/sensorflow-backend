@@ -14,7 +14,7 @@ class Device(Base):
     )
     location = Column(String(200), nullable=False)
     unit = Column(String(20), nullable=False)
-    api_key = Column(String(36), unique=True, nullable=False, index=True)
+    api_key = Column(String(200), unique=True, nullable=False, index=True)
     threshold_min = Column(Float, nullable=True)
     threshold_max = Column(Float, nullable=True)
     is_active = Column(Boolean, default=True)
