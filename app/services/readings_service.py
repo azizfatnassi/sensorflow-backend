@@ -9,6 +9,8 @@ from typing import List,Optional
 from app.db.models import Device, Reading
 from app.schemas.readings import ReadingCreate
 from app.services import alert_service   # ← on délègue proprement
+from app.schemas.readings import  ReadingCreate
+
 
 
 def ingest_reading(db: Session, device: Device, data: ReadingCreate) -> Reading:
@@ -18,33 +20,36 @@ def ingest_reading(db: Session, device: Device, data: ReadingCreate) -> Reading:
         device_id=device.id,
         value=data.value,
         timestamp=timestamp,
-        alert=False
+        #alert=False
     )
 
-    alert = False
-
+    #alert = False
+    db.add(reading)
+    db.flush()
     if device.threshold_min is not None and data.value < device.threshold_min:
-        alert = True
+        #alert = True
         alert_service.create_alert(     # ← plus de _create_alert interne
             db=db,
             device=device,
             value=data.value,
+            reading_id=reading.id,
             severity="warning",
             message=f"Value {data.value} below minimum {device.threshold_min}"
         )
 
     if device.threshold_max is not None and data.value > device.threshold_max:
-        alert_triggered = True
+       # alert_triggered = True
         alert_service.create_alert(
             db=db,
             device=device,
             value=data.value,
+            reading_id=reading.id,
             severity="critical",
             message=f"Value {data.value} above maximum {device.threshold_max}"
         )
 
-    reading.alert = alert
-    db.add(reading)
+   # reading.alert = alert
+    #db.add(reading)
     db.commit()        # ← un seul commit : lecture + alertes ensemble
     db.refresh(reading)
     return reading

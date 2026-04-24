@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Enum, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -18,6 +18,7 @@ class Alert(Base):
     message = Column(String(500), nullable=False)
     resolved = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-
+    value = Column(Float, nullable=True)
+    
     device = relationship("Device", back_populates="alerts")
     reading = relationship("Reading", back_populates="alert")

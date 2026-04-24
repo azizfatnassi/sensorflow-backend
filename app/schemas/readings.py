@@ -13,7 +13,7 @@ class ReadingResponse(BaseModel):
     device_id:int
     value: float
     timestamp:datetime
-    alert_triggered: bool
+    alert_triggered: bool= False
 
     model_config={"from_attributes":True}
 

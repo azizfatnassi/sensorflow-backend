@@ -1,15 +1,22 @@
-
-
 from typing import List, Optional
 from datetime import datetime
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Header
 from sqlalchemy.orm import Session
 from app.schemas.readings import ReadingResponse, ReadingStats
-from app.core.dependencies import get_current_user
-from app.db.models import User
+from app.core.dependencies import get_current_user, get_device_by_api
+from app.db.models import User, Device
 from app.db.session import get_db
-from backend.app.services import readings_service
+from app.services import readings_service
+from app.schemas.readings import ReadingResponse, ReadingStats, ReadingCreate
 router = APIRouter(prefix="/api", tags=["readings"])
+
+@router.post("/readings", response_model=ReadingResponse, status_code=201)
+def ingest_reading(
+    payload: ReadingCreate,          # ← était dict
+    device: Device = Depends(get_device_by_api),
+    db: Session = Depends(get_db)
+):
+    return readings_service.ingest_reading(db, device=device, data=payload) 
 
 @router.get("/devices/{device_id}/readings", response_model=List[ReadingResponse])
 def get_readings(
@@ -27,7 +34,6 @@ def get_readings(
         page=page, limit=limit
     )
 
-
 @router.get("/devices/{device_id}/readings/stats", response_model=ReadingStats)
 def get_stats(
     device_id: int,
@@ -41,7 +47,6 @@ def get_stats(
         from_date=from_date, to_date=to_date
     )
 
-
 @router.get("/devices/{device_id}/readings/export")
 def export_csv(
     device_id: int,
@@ -50,7 +55,6 @@ def export_csv(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Pas de response_model ici — StreamingResponse gère ça lui-même."""
     return readings_service.export_readings_csv(
         db, device_id, owner_id=current_user.id,
         from_date=from_date, to_date=to_date

@@ -6,6 +6,7 @@ from app.core.config import settings
 from app.api.routes import auth 
 from app.api.routes import devices
 from app.api.routes import alerts
+from app.api.routes import readings
 app = FastAPI(
     title="SensorFlow API",
 
@@ -26,6 +27,7 @@ app.include_router(auth.router)
 app.include_router(devices.router)
 app.include_router(alerts.router)
 app.include_router(ws.router)
+app.include_router(readings.router)
 @app.get("/")
 def root():
     return {"message": "SensorFlow API is running", "version": "1.0.0"}

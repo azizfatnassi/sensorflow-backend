@@ -10,7 +10,7 @@ class AlertResponse(BaseModel):
     severity: str        # "warning" ou "critical"
     message: str
     resolved: bool
-    resolved_at: Optional[datetime]
+    resolved_at: Optional[datetime] = None 
     created_at: datetime
 
     model_config = {"from_attributes": True}

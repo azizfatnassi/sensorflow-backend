@@ -10,6 +10,8 @@ def create_alert(
     db: Session,
     device: Device,
     value: float,
+    reading_id: int,      # ← ajouté
+    
     severity: str,
     message: str
 ) -> Alert:
@@ -20,6 +22,7 @@ def create_alert(
     alert = Alert(
         device_id=device.id,
         value=value,
+        reading_id=reading_id, 
         severity=severity,
         message=message,
         resolved=False
